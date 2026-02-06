@@ -3,4 +3,6 @@
 .claude/*
 !.claude/.claude.json
 !.claude/settings.json
+.gemini/*
+!.gemini/settings.json
 .env
