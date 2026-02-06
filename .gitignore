@@ -5,4 +5,5 @@
 !.claude/settings.json
 .gemini/*
 !.gemini/settings.json
+.cache/
 .env
