@@ -2,7 +2,11 @@ SHELL := /bin/bash
 
 ARGS := $(filter-out add remove,$(MAKECMDGOALS))
 
-.PHONY: add remove
+.PHONY: add remove $(ARGS)
+.SILENT: $(ARGS)
+
+$(ARGS):
+	@:
 
 add:
 	@PROJ="$$(echo "$(ARGS)" | awk '{print $$1}')"; \
