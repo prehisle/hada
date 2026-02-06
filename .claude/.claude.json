@@ -1,0 +1,10 @@
+{
+  "hasCompletedOnboarding": true,
+  "bypassPermissionsModeAccepted": true,
+  "autoUpdates": false,
+  "projects": {
+    "/playground": {
+      "hasTrustDialogAccepted": true
+    }
+  }
+}
