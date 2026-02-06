@@ -1,0 +1,8 @@
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+network_access = "enabled"
+model = "gpt-5.2-codex"
+model_reasoning_effort = "medium"
+
+[projects."./"]
+trust_level = "trusted"
