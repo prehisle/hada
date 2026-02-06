@@ -1,6 +1,7 @@
 SHELL := /bin/bash
 
 ARGS := $(filter-out add remove,$(MAKECMDGOALS))
+UPSTREAM ?= origin/main
 
 .PHONY: add remove $(ARGS)
 .SILENT: $(ARGS)
@@ -12,10 +13,10 @@ add:
 	@PROJ="$$(echo "$(ARGS)" | awk '{print $$1}')"; \
 	ENV="$$(echo "$(ARGS)" | awk '{print $$2}')"; \
 	if [ -z "$$PROJ" ] || [ -z "$$ENV" ]; then \
-		echo "Usage: make add <project> <env-name> [DIR=../<project>-<env-name>]"; \
+		echo "Usage: make add <project> <env-name> [DIR=<project>-<env-name>] [UPSTREAM=origin/main]"; \
 		exit 1; \
 	fi; \
-	if [ ! -d "$$PROJ/.git" ]; then \
+	if [ ! -e "$$PROJ/.git" ]; then \
 		echo "Project $$PROJ not found or not a git repo in current directory"; \
 		exit 1; \
 	fi; \
@@ -24,18 +25,21 @@ add:
 	BASE="$$PWD"; \
 	if [ -z "$$DIR" ]; then DIR="$$BASE/$$FULL_NAME"; \
 	elif [[ "$$DIR" != /* ]]; then DIR="$$BASE/$$DIR"; fi; \
-	echo "Creating worktree in $$DIR on branch $$FULL_NAME tracking origin/main"; \
-	git -C "$$PROJ" worktree add -b "$$FULL_NAME" "$$DIR" origin/main; \
-	( cd "$$DIR" && git branch --set-upstream-to=origin/main "$$FULL_NAME" )
+	echo "Creating worktree in $$DIR on branch $$FULL_NAME tracking $(UPSTREAM)"; \
+	git -C "$$PROJ" worktree add -b "$$FULL_NAME" "$$DIR" "$(UPSTREAM)"; \
+	( cd "$$DIR" && \
+		git branch --set-upstream-to="$(UPSTREAM)" "$$FULL_NAME" && \
+		git config push.default upstream \
+	)
 
 remove:
 	@PROJ="$$(echo "$(ARGS)" | awk '{print $$1}')"; \
 	ENV="$$(echo "$(ARGS)" | awk '{print $$2}')"; \
 	if [ -z "$$PROJ" ] && [ -z "$(DIR)" ]; then \
-		echo "Usage: make remove <project> <env-name> [DIR=../<project>-<env-name>] [FORCE=1]"; \
+		echo "Usage: make remove <project> <env-name> [DIR=<project>-<env-name>] [FORCE=1]"; \
 		exit 1; \
 	fi; \
-	if [ -n "$$PROJ" ] && [ ! -d "$$PROJ/.git" ]; then \
+	if [ -n "$$PROJ" ] && [ ! -e "$$PROJ/.git" ]; then \
 		echo "Project $$PROJ not found or not a git repo in current directory"; \
 		exit 1; \
 	fi; \
